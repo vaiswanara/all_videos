@@ -111,8 +111,9 @@
         }
 
         function playVideo(videoId) {
-            const player = document.getElementById('youtubePlayer');
-            player.src = `https://www.youtube.com/embed/${videoId}`;
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const url = isMobile ? `vnd.youtube://${videoId}` : `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1`;
+            window.open(url, '_blank');
         }
 
         window.onload = loadYouTubeData;
