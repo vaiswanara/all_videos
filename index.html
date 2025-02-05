@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-PATA YouTube Videos</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 300px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-y: auto;
+            height: 100vh;
+            border-right: 1px solid #ccc;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+        select, .video-item {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .video-item:hover {
+            background-color: #e0e0e0;
+        }
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+        }
+        .logo a {
+            text-decoration: none;
+            color: #000;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .separator {
+            border-bottom: 1px solid #ccc;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="logo.jpeg" alt="Logo">
+            <a href="https://vaiswanara.com" target="_blank">e-PATA</a>
+        </div>
+        <div class="separator"></div>
+        <p><center>You may watch All YouTube Channel Videos here. All the Best</center></p>
+        <div class="separator"></div>
+        <label for="playlistSelect">Select Playlist:</label>
+        <select id="playlistSelect" onchange="filterVideos()"></select>
+        <div id="videoList"></div>
+    </div>
+
+    <div class="content">
+        <iframe id="youtubePlayer" src="" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        let youtubeData = {};
+
+        async function loadYouTubeData() {
+            const response = await fetch('youtube_data.json');
+            youtubeData = await response.json();
+
+            const playlistSelect = document.getElementById('playlistSelect');
+            Object.keys(youtubeData).forEach(playlist => {
+                const option = new Option(playlist, playlist);
+                playlistSelect.add(option);
+            });
+
+            filterVideos(); // Load videos for the first playlist by default
+        }
+
+        function filterVideos() {
+            const selectedPlaylist = document.getElementById('playlistSelect').value;
+            const videoList = document.getElementById('videoList');
+            videoList.innerHTML = '';
+
+            if (youtubeData[selectedPlaylist]) {
+                youtubeData[selectedPlaylist].forEach(video => {
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
+                    videoItem.textContent = video.videoName;
+                    videoItem.onclick = () => playVideo(video.videoId);
+                    videoList.appendChild(videoItem);
+                });
+            }
+        }
+
+        function playVideo(videoId) {
+            const player = document.getElementById('youtubePlayer');
+            player.src = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        window.onload = loadYouTubeData;
+    </script>
+</body>
+</html>
